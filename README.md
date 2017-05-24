@@ -1,6 +1,6 @@
 Projeto de Metodos
 
-================
+=============================================================
 
 1. Faça um clone do repositório.
 2. Entre na pasta do repositório.

@@ -1,8 +1,12 @@
 appname:=foguetinha
 compile:
-	@g++ main.cpp -o $(appname)
+	@g++ main.cpp \
+	-I /usr/include/opencv \
+	-L /usr/lib \
+	`pkg-config --cflags --libs opencv` \
+	-o $(appname)
 	
 run:
-	@./foguetinha
+	@./$(appname)
 	
 all: compile run
