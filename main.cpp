@@ -1,65 +1,118 @@
 #include "MasterHeader.hpp"
 #include "MetodoEuler.hpp"
+#include "MetodoEulerModificado.hpp"
+
 
 char TITLE[] =
-"######################\n\
-# Projeto de Metodos #\n\
-######################\n";
+"################################\n\
+# Projeto de Metodos Numericos #\n\
+################################\n\n\
+\tGrupo 2:\n\
+\t\tDayane Kelly (drks@cin.ufpe.br)\n\
+\t\tIraline Nunes (ins@cin.ufpe.br)\n\
+\t\tLucas Xavier (lgxa@cin.ufpe.br)\n\
+\t\tLucas Maggi (lom@cin.ufpe.br)\n";
 
+/*
+	Organizando derivadas
+		u dM/dt = M dv/dt = M a
+		dv/dt = u dM/Mdt
+		*/
+
+/*
+	Resultado Analítico
+	
+Entrada
+	u 	: 	velocidade relativa de ejeção do combustível
+	mi	: 	massa inicial
+	mf	:	massa final
+	vi	:	velocidade inicial
+	
+Saida
+	vf 	:	velocidade final [ vf = u*log(mi/mf) + vi]
+*/
+float ResultadoAnalitico(float u, float mi, float mf, float vi) {
+	float vf;
+	vf = u*log(mi/mf) + vi;
+	return vf;
+}
 
 
 /*
+	Derivada dv/dt (variação da velocidade pela variação de tempo)
+Entrada
+	dm	:	taxa de ejeção de combustível
+	tempo	:	tempo atual
+	massa	:	massa atual
+	
 
-Pseudo-código EULER MODIFICADO
-
-Entrada:
-	tempo_aplicado
-Saída:
-	y, qntd_loops
-Inicio
-	h = tempo_aplicado
-	erro = 1
-	Enquanto erro>=0.0001 faça:
-		qntd_loops = 0
-		tempo_atual = 0
-		y = capital_inicial
-		Enquanto tempo_atual<tempo_aplicado faça:
-		y_previsao=y+h*derivada(tempo_atual+h)
-		y=y+ (h/2)*( derivada(tempo_atual,y)+derivada(tempo_atual+h,y_previsao) )
-			tempo_atual = tempo_atual+h
-			qntd_loops = qntd_loops+1
-		Fim-Enquanto
-		erro = abs(y-solucao_analitica)
-		Se erro>=0.0001 então
-			h = h/4
-		Senão
-			Retorna y, qntd_loops
-		Fim-se
-	Fim-Enquanto
-Fim
-
-
-
+Saida
+	dv : variacao de velocidade
 */
-
-float MetodoEuler::Derivada(float tempo) {
-
+float MetodoEuler::Derivada(float tempo, float massa) {
+	float dv;
+	if (massa > dm) {
+		dv = u*dm/massa;
+	} else dv = 0.f;
+	return dv;
 }
 
 
 int main (int args, char* argv[]) {
+	std::ios_base::sync_with_stdio(true);
 	cout << TITLE;
 	if (args > 1) {
 	
 	}
+	
+	/*
+		u 	: 	velocidade relativa de ejeção do combustível
+		mi	: 	massa inicial
+		mf	:	massa final
+		vi	:	velocidade inicial
+		vf	:	velocidade final
+		t	:	tempo
+		tx	:	taxa de perda de combustível (dM/dt)
+		
+	*/
+	float u, mi, mf, vi, t, vf, dm;
+	vi = 0.f;
+	mi = 100000.f;
+	vf = 0.f;
+	t = 1000.f;
+	dm = 10.f;
+	u = 100.f;
+	mf = mi - t*dm;
+	
+	vf = ResultadoAnalitico(u, mi, mf, vi);
+	
+	printf("Resultado Analitico : %.5f\n", vf);
+	
+	
+	float evf = vi;
 
 	cout << endl << "Metodo de Euler" << endl << endl;
-	MetodoEuler::DefinirParametros();
-	MetodoEuler::Executar();
+	MetodoEuler::DefinirParametros(vf,dm,u,mi,t,0.1);
+	MetodoEuler::ClearGraphic();
+	int iteracoes = MetodoEuler::Executar(&evf);
 #ifdef USE_OPENCV
-	MetodoEuler::MostrarResultados();
+	MetodoEuler::MostrarResultados(cv::Scalar(255,0,0));
+	//MetodoEuler::SalvarResultados("teste1.png");
 #endif
-	MetodoEuler::SalvarResultados();
+
+#ifdef USE_OPENCV
+	mi = 50000.f;
+	MetodoEuler::DefinirParametros(vf,dm,u,mi,t,0.1);
+	MetodoEuler::Executar(&vi);
+	MetodoEuler::MostrarResultados(cv::Scalar(0,255,0));
+	//MetodoEuler::SalvarResultados("teste2.png");
+	
+	mi = 10000.f;
+	MetodoEuler::DefinirParametros(vf,dm,u,mi,t,0.1);
+	MetodoEuler::Executar(&vi);
+	MetodoEuler::MostrarResultados(cv::Scalar(0,0,0));
+	MetodoEuler::SalvarResultados("teste3.png");
+#endif	
 	cout << endl << endl;
 
 	return 0;
