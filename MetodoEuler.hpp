@@ -24,7 +24,7 @@ Inicio
 			Se erro>=0.0001 então
 				h = h/4
 			Senão
-				Retorna y, qntd_loops
+				Retorna y, qntd_loops	
 			Fim-se
 		Fim-Enquanto
 	Fim
@@ -39,33 +39,37 @@ namespace MetodoEuler {
 	float tempo = 1.f;
 	float h;
 	float solucao_analitica;
-	
+#ifdef USE_OPENCV	
 	cv::Mat graphic;
+#endif
 	/*
 		u 	: 	velocidade relativa de ejeção do combustível
 		dm	:	taxa de ejeção de combustível
 	*/
-	float dm, u, mi;
+	float dm, u, mi, mf;
 	
 	std::vector<float> points;
 	
 	float Derivada(float tempo, float massa);
 	
 
-	void DefinirParametros(float solucao_analitica, float nova_dm, float novo_u, float nova_mi, float novo_tempo = 1.f, float novo_h = 0.001f, float nova_precisao = 0.0001f) {
+	void DefinirParametros(float solucao_analitica, float nova_dm, float novo_u, float nova_mi, float nova_mf, float novo_tempo = 1.f, float novo_h = 0.001f, float nova_precisao = 0.0001f) {
 		cout << "Definindo parâmetros" << endl;
 		precisao = nova_precisao;
 		tempo = novo_tempo;
 		u = novo_u;
 		dm = nova_dm;
 		mi = nova_mi;
+		mf = nova_mf;
 		h = novo_h;
 		points.clear();
 	}
 	
 	void ClearGraphic() {
+#ifdef USE_OPENCV
 		graphic = cv::Mat::zeros(600,600, CV_8UC3);
 		cv::rectangle(graphic, cv::Point(0,0), cv::Point(600,600),cv::Scalar(255,255,255),-1);
+#endif
 	}
 	
 	/*int Euler(float tempo_aplicado = 1.f, float *y = NULL) {
@@ -93,7 +97,8 @@ namespace MetodoEuler {
 		float tempo_atual = 0.0f, m = mi;
 		float erro = 1.f;
 		points.push_back(*y);
-		while (tempo_aplicado > tempo_atual) {
+		//while (tempo_aplicado > tempo_atual) {
+		while (m > mf) {
 			//cout << *y << " ";
 			tempo_atual+=h;
 			*y = *y + h*Derivada(tempo_atual, m);
@@ -130,7 +135,10 @@ namespace MetodoEuler {
 		deltay = maxy-miny;
 		float x = 0, y = points[0];
 		for(int i=0; i<points.size()-1;++i) {
-			cv::Point2f p((i*600.f/points.size()),(1.f-((points[i]-miny)/deltay))*600.f), p2((i+1)*600.f/points.size(),(1.f-((points[i+1]-miny)/deltay))*600.f);
+			cv::Point2f p((i*600.f/points.size()),
+			(1.f-((points[i]-miny)/deltay))*600.f),
+			p2((i+1)*600.f/points.size(),
+			(1.f-((points[i+1]-miny)/deltay))*600.f);
 			cv::line(graphic,p2,p,color, 2);
 		}
 		//cv::line(graphic,cv::Point2f(0,0),cv::Point2f(100,100),cor, 2);

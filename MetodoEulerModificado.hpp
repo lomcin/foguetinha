@@ -39,42 +39,96 @@ namespace MetodoEulerModificado {
 	int iteracoes;
 	float precisao = 0.0001;
 	float tempo = 1.f;
+	float h;
+	float solucao_analitica;
+#ifdef USE_OPENCV	
+	cv::Mat graphic;
+#endif
+	/*
+		u 	: 	velocidade relativa de ejeção do combustível
+		dm	:	taxa de ejeção de combustível
+	*/
+	float dm, u, mi, mf;
 	
-	float Derivada(float tempo);
+	std::vector<float> points;
 	
-	void DefinirParametros(float nova_precisao = 0.0001, float novo_tempo = 1.f) {
+	float Derivada(float tempo, float massa);
+	
+
+	void DefinirParametros(float solucao_analitica, float nova_dm, float novo_u, float nova_mi, float nova_mf, float novo_tempo = 1.f, float novo_h = 0.001f, float nova_precisao = 0.0001f) {
+		cout << "Definindo parâmetros" << endl;
 		precisao = nova_precisao;
 		tempo = novo_tempo;
-		cout << "Definindo parâmetros" << endl;
+		u = novo_u;
+		dm = nova_dm;
+		mi = nova_mi;
+		mf = nova_mf;
+		h = novo_h;
+		points.clear();
 	}
 	
-	void Euler(float tempo_aplicado = 1, float *y = NULL) {
-		if (y == NULL) return;
-		float h = tempo_aplicado,
-			erro = 1.f;
-		/*while (erro > precisao) {
-			iteracoes++;
-			*y = *y + h*derivada(tempo_atual+h);
-		}*/
+	void ClearGraphic() {
+#ifdef USE_OPENCV
+		graphic = cv::Mat::zeros(600,600, CV_8UC3);
+		cv::rectangle(graphic, cv::Point(0,0), cv::Point(600,600),cv::Scalar(255,255,255),-1);
+#endif
 	}
 	
-	void Executar() {
-		cout << "Executando Metodo de Euler" << endl;
+	int EulerModificado(float tempo_aplicado = 1.f, float *y = NULL) {
+		if (y == NULL) return 0;
+		float tempo_atual = 0.0f, m = mi;
+		float erro = 1.f;
+		points.push_back(*y);
+		while (tempo_aplicado > tempo_atual) {
+			//cout << *y << " ";
+			tempo_atual+=h;
+			static float y_previsao= *y + h*Derivada(tempo_atual+h,m);
+			*y=*y+ (h/2.f)*( Derivada(tempo_atual,m)+Derivada(tempo_atual+h,m-dm) );
+			//*y = *y + h*Derivada(tempo_atual, m);
+			points.push_back(*y);
+			//cout << *y << endl;
+			m -= dm;
+			++iteracoes;
+		}
+		erro = fabs(*y - solucao_analitica);
+		cout << "erro " << erro << endl;
+		return iteracoes;
+	}
+	
+	int Executar(float *y_retorno = NULL) {
+		cout << "Executando Metodo de Euler Modificado" << endl;
 		float y_final;
-		Euler(tempo,&y_final);
+		EulerModificado(tempo,&y_final);
+		if (y_retorno) *y_retorno = y_final;
 		cout << "tempo " << tempo << " y_final " << y_final << endl;
 		cout << "Levou " << iteracoes << " iteracoes." << endl;
+		return iteracoes;
 	}
 	
 #ifdef USE_OPENCV
-	void MostrarResultados() {
-		cv::Mat lenna = cv::imread("../../../Lenna.png");
-		cv::imshow("Lenna", lenna);
-		cv::waitKey(0);
+	void MostrarResultados(const cv::Scalar &color) {
+		//cv::Mat lenna = cv::imread("../../../Lenna.png");
+		//cv::imshow("Lenna", lenna);
+		
+		
+		float maxy, miny, deltay;
+		maxy = *max_element(points.begin(),points.end());
+		miny = *min_element(points.begin(),points.end());
+		cout << "Max min " << maxy << " " << miny << endl;
+		deltay = maxy-miny;
+		float x = 0, y = points[0];
+		for(int i=0; i<points.size()-1;++i) {
+			cv::Point2f p((i*600.f/points.size()),(1.f-((points[i]-miny)/deltay))*600.f), p2((i+1)*600.f/points.size(),(1.f-((points[i+1]-miny)/deltay))*600.f);
+			cv::line(graphic,p2,p,color, 2);
+		}
+		//cv::line(graphic,cv::Point2f(0,0),cv::Point2f(100,100),cor, 2);
+		cv::imshow("Grafico", graphic);
+		while(cv::waitKey(0) != 27);
 	}
 #endif
 	
-	void SalvarResultados() {
+	void SalvarResultados(std::string nome) {
+		cv::imwrite(nome,graphic);
 		cout << "Salvando resultados" << endl;
 	}
 
