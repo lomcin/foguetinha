@@ -46,14 +46,23 @@ namespace MetodoEuler {
 		u 	: 	velocidade relativa de ejeção do combustível
 		dm	:	taxa de ejeção de combustível
 	*/
-	float dm, u, mi, mf;
+	float dm, u, mi, mf, vi;
 	
 	std::vector<float> points;
 	
-	float Derivada(float tempo, float massa);
+	float Derivada(float t, float massa);
 	
 
-	void DefinirParametros(float solucao_analitica, float nova_dm, float novo_u, float nova_mi, float nova_mf, float novo_tempo = 1.f, float novo_h = 0.001f, float nova_precisao = 0.0001f) {
+	void DefinirParametros(
+			float solucao_analitica, 
+			float nova_dm,
+			float novo_u,
+			float nova_mi,
+			float nova_mf,
+			float novo_tempo = 1.f, 
+			float novo_h = 0.001f, 
+			float nova_precisao = 0.0001f
+		) {
 		cout << "Definindo parâmetros" << endl;
 		precisao = nova_precisao;
 		tempo = novo_tempo;
@@ -64,6 +73,17 @@ namespace MetodoEuler {
 		h = novo_h;
 		points.clear();
 	}
+	
+	void PrintValues() {
+		cout << "Valores : " << endl << 
+		" u 	: " << u << endl <<
+		" mi	: " << mi << endl <<
+		" mf	: " << mf << endl <<
+		" vi	: " << vi << endl <<
+		" tempo	: " << tempo << endl <<
+		" tx	: " << dm << endl;
+	}
+	
 	
 	void ClearGraphic() {
 #ifdef USE_OPENCV
@@ -96,10 +116,10 @@ namespace MetodoEuler {
 		if (y == NULL) return 0;
 		float tempo_atual = 0.0f, m = mi;
 		float erro = 1.f;
+		vi = *y;
 		points.push_back(*y);
-		//while (tempo_aplicado > tempo_atual) {
-		while (m > mf) {
-			//cout << *y << " ";
+		while (tempo_aplicado > tempo_atual) {
+		//while (m > mf) {
 			tempo_atual+=h;
 			*y = *y + h*Derivada(tempo_atual, m);
 			points.push_back(*y);
@@ -107,14 +127,16 @@ namespace MetodoEuler {
 			m -= dm;
 			++iteracoes;
 		}
+		cout << points.back() << endl;
 		erro = fabs(*y - solucao_analitica);
 		cout << "erro " << erro << endl;
 		return iteracoes;
 	}
 	
 	int Executar(float *y_retorno = NULL) {
-		cout << "Executando Metodo de Euler" << endl;
+		cout << linhas << "Executando Metodo de Euler" << endl;
 		float y_final;
+		if (y_retorno) y_final = *y_retorno;
 		Euler(tempo,&y_final);
 		if (y_retorno) *y_retorno = y_final;
 		cout << "tempo " << tempo << " y_final " << y_final << endl;
@@ -148,7 +170,9 @@ namespace MetodoEuler {
 #endif
 	
 	void SalvarResultados(std::string nome) {
+#ifdef USE_OPENCV
 		cv::imwrite(nome,graphic);
+#endif
 		cout << "Salvando resultados" << endl;
 	}
 

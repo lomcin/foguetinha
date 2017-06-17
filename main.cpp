@@ -11,7 +11,8 @@ char TITLE[] =
 \t\tDayane Kelly (drks@cin.ufpe.br)\n\
 \t\tIraline Nunes (ins@cin.ufpe.br)\n\
 \t\tLucas Xavier (lgxa@cin.ufpe.br)\n\
-\t\tLucas Maggi (lom@cin.ufpe.br)\n";
+\t\tLucas Maggi (lom@cin.ufpe.br)\n\n\n\
+################################\n\n\n";
 
 /*
 	Organizando derivadas
@@ -42,14 +43,14 @@ float ResultadoAnalitico(float u, float mi, float mf, float vi) {
 	Derivada dv/dt (variação da velocidade pela variação de tempo)
 Entrada
 	dm	:	taxa de ejeção de combustível
-	tempo	:	tempo atual
+	t	:	tempo atual
 	massa	:	massa atual
 	
 
 Saida
 	dv : variacao de velocidade
 */
-float MetodoEuler::Derivada(float tempo, float massa) {
+float MetodoEuler::Derivada(float t, float massa) {
 	float dv;
 	if (massa > mf) {
 		dv = u*dm/massa;
@@ -57,7 +58,7 @@ float MetodoEuler::Derivada(float tempo, float massa) {
 	return dv;
 }
 
-float MetodoEulerModificado::Derivada(float tempo, float massa) {
+float MetodoEulerModificado::Derivada(float t, float massa) {
 	float dv;
 	if (massa > mf) {
 		dv = u*dm/massa;
@@ -87,10 +88,12 @@ int main (int args, char* argv[]) {
 	vi = 0.f;
 	mi = 100000.f;
 	vf = 0.f;
-	t = 1000.f;
-	dm = 10.f;
-	u = 100.f;
-	mf = mi - t*dm;
+	t = 100.f;
+	dm = 100.f;
+	u = 1.f;
+	//mf = mi - t*dm;
+	mf = 100.f;
+	assert(mf > 0.f);
 	
 	vf = ResultadoAnalitico(u, mi, mf, vi);
 	
@@ -100,29 +103,34 @@ int main (int args, char* argv[]) {
 	float evf = vi;
 
 	cout << endl << "Metodo de Euler" << endl << endl;
-	MetodoEuler::DefinirParametros(vf,dm,u,mi,t,0.1);
+	MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,t,0.1);
 	MetodoEuler::ClearGraphic();
 	int iteracoes = MetodoEuler::Executar(&evf);
 #ifdef USE_OPENCV
 	MetodoEuler::MostrarResultados(cv::Scalar(255,0,0));
 	//MetodoEuler::SalvarResultados("teste1.png");
 #endif
+	MetodoEuler::PrintValues();
 
 #ifdef USE_OPENCV
+	vi = 3.f;
 	evf = vi;
 	mi = 50000.f;
 	vf = ResultadoAnalitico(u, mi, mf, vi);
-	MetodoEuler::DefinirParametros(vf,dm,u,mi,t,0.1);
-	MetodoEuler::Executar(&vi);
+	MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,t,0.1);
+	MetodoEuler::Executar(&evf);
 	MetodoEuler::MostrarResultados(cv::Scalar(0,255,0));
+	MetodoEuler::PrintValues();
 	//MetodoEuler::SalvarResultados("teste2.png");
 	
+	vi = 4.f;
 	evf = vi;
 	mi = 10000.f;
 	vf = ResultadoAnalitico(u, mi, mf, vi);
-	MetodoEuler::DefinirParametros(vf,dm,u,mi,t,0.1);
-	MetodoEuler::Executar(&vi);
+	MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,t,0.1);
+	MetodoEuler::Executar(&evf);
 	MetodoEuler::MostrarResultados(cv::Scalar(0,0,0));
+	MetodoEuler::PrintValues();
 	MetodoEuler::SalvarResultados("teste3.png");
 #endif	
 	cout << endl << endl;
@@ -130,7 +138,7 @@ int main (int args, char* argv[]) {
 	evf = vi;
 	mi = 100000.f;
 	cout << endl << "Metodo de Euler Modificado" << endl << endl;
-	MetodoEulerModificado::DefinirParametros(vf,dm,u,mi,t,0.1);
+	MetodoEulerModificado::DefinirParametros(vf,dm,u,mi,mf,vi,t,0.1);
 	MetodoEulerModificado::ClearGraphic();
 	iteracoes = MetodoEulerModificado::Executar(&evf);
 #ifdef USE_OPENCV

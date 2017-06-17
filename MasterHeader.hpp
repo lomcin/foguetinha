@@ -2,9 +2,12 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <cassert>
 using namespace std;
 
 //float precisao = 0.001;
+
+#define linhas "\n\n\n\n"
 
 #define USE_OPENCV
 

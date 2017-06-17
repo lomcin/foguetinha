@@ -7,6 +7,7 @@ compile:
 	-o $(appname)
 	
 run:
-	@./$(appname)
+	@./$(appname) > saida.txt
+	gedit saida.txt &
 	
 all: compile run
