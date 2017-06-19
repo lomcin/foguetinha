@@ -54,7 +54,7 @@ namespace MetodoEuler {
 	
 
 	void DefinirParametros(
-			float solucao_analitica, 
+			float nova_solucao_analitica, 
 			float nova_dm,
 			float novo_u,
 			float nova_mi,
@@ -64,6 +64,7 @@ namespace MetodoEuler {
 			float nova_precisao = 0.0001f
 		) {
 		cout << "Definindo parâmetros" << endl;
+		solucao_analitica = nova_solucao_analitica;
 		precisao = nova_precisao;
 		tempo = novo_tempo;
 		u = novo_u;
@@ -114,6 +115,7 @@ namespace MetodoEuler {
 	
 	int Euler(float tempo_aplicado = 1.f, float *y = NULL) {
 		if (y == NULL) return 0;
+		iteracoes = 0;
 		float tempo_atual = 0.0f, m = mi;
 		float erro = 1.f;
 		vi = *y;
@@ -124,11 +126,12 @@ namespace MetodoEuler {
 			*y = *y + h*Derivada(tempo_atual, m);
 			points.push_back(*y);
 			//cout << *y << endl;
-			m -= dm;
+			if (m > mf) m -= dm;
 			++iteracoes;
 		}
-		cout << points.back() << endl;
+		cout << "Último valor " << points.back() << endl;
 		erro = fabs(*y - solucao_analitica);
+		printf("Resultado Analitico : %.5f\n", solucao_analitica);
 		cout << "erro " << erro << endl;
 		return iteracoes;
 	}

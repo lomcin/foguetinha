@@ -12,7 +12,6 @@
 ################################
 
 
-Resultado Analitico : 6.90776
 
 Metodo de Euler
 
@@ -22,17 +21,18 @@ Definindo parâmetros
 
 
 Executando Metodo de Euler
-0.648547
-erro 0.648547
-tempo 100 y_final 0.648547
-Levou 1001 iteracoes.
-Max min 0.648547 0
+Último valor 6.48547
+Resultado Analitico : 6.90776
+erro 0.422284
+tempo 1000 y_final 6.48547
+Levou 1000 iteracoes.
+Max min 6.48547 0
 Valores : 
  u 	: 1
  mi	: 100000
  mf	: 100
  vi	: 0
- tempo	: 100
+ tempo	: 1000
  tx	: 100
 Definindo parâmetros
 
@@ -40,17 +40,18 @@ Definindo parâmetros
 
 
 Executando Metodo de Euler
-3.57929
-erro 3.57929
-tempo 100 y_final 3.57929
-Levou 2002 iteracoes.
-Max min 3.57929 3
+Último valor 5.79282
+Resultado Analitico : 6.21461
+erro 0.421785
+tempo 1000 y_final 5.79282
+Levou 1000 iteracoes.
+Max min 5.79282 0
 Valores : 
  u 	: 1
  mi	: 50000
  mf	: 100
- vi	: 3
- tempo	: 100
+ vi	: 0
+ tempo	: 1000
  tx	: 100
 Definindo parâmetros
 
@@ -58,17 +59,18 @@ Definindo parâmetros
 
 
 Executando Metodo de Euler
-4.41874
-erro 4.41874
-tempo 100 y_final 4.41874
-Levou 3003 iteracoes.
-Max min 4.41874 4
+Último valor 4.18738
+Resultado Analitico : 4.60517
+erro 0.417793
+tempo 1000 y_final 4.18738
+Levou 1000 iteracoes.
+Max min 4.18738 0
 Valores : 
  u 	: 1
  mi	: 10000
  mf	: 100
- vi	: 4
- tempo	: 100
+ vi	: 0
+ tempo	: 1000
  tx	: 100
 Salvando resultados
 
@@ -78,8 +80,8 @@ Metodo de Euler Modificado
 
 Definindo parâmetros
 Executando Metodo de Euler Modificado
-erro 100.1
-tempo 4 y_final 100.1
-Levou 1 iteracoes.
-Max min 100.1 100
+erro 1000
+tempo 0 y_final 1000
+Levou 0 iteracoes.
+Max min 1000 1000
 Salvando resultados
