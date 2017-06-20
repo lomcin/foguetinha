@@ -40,7 +40,7 @@ int main(){
 	n = 100; //quantidade de interações
 	mi = 100000.f; //massa inicial
 	vi = 0.f; // velocidade inicial
-	h = 0.1f;
+	h = 1.f;
 	dm = 100.f;
 	tf = 1200.f;
 	mf = 100.f;
