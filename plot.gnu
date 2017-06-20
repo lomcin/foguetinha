@@ -11,4 +11,3 @@ plot 'points.csv' using 1:2 title 'f1' smooth unique with lines,\
 	 'points.csv' using 1:4 title 'f3' smooth unique with lines,\
 	 'points.csv' using 1:5 title 'f4' smooth unique with lines,\
 	 'points.csv' using 1:6 title 'f5' smooth unique with lines
-pause mouse any "Any key or button will terminate"

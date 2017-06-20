@@ -9,6 +9,6 @@ compile:
 run:
 	@./$(appname) > saida.txt
 	#gedit saida.txt &
-	gnuplot5-qt plot.gnu
+	gnuplot5-qt plot.gnu -persist
 	
 all: compile run

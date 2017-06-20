@@ -89,7 +89,17 @@ int main (int args, char* argv[]) {
 		entrada.open(argv[1]);
 		assert(entrada.is_open());
 
+		testes.clear();
+		Teste teste;
 
+		entrada >> teste.title;
+		entrada >> teste.mi;
+		entrada >> teste.mf;
+		entrada >> teste.vi;
+		entrada >> teste.u;
+		entrada >> teste.t;
+
+		testes.push_back(teste);
 
 		entrada.close();
 	}
@@ -187,13 +197,14 @@ unset paxis 3 tics\n";*/
 	}
 	fi << endl;*/
 	t = 0.f;
-	for(int i = 0; i < points[0].size()/100 + 1; ++i) {
+	int fator = 10;
+	for(int i = 0; i < points[0].size()/fator + 1; ++i) {
 		fi << t;
 		for (int j=0; j < testes.size(); ++j) {
-			fi << "," << points[j][i*100];
+			fi << "," << points[j][i*fator];
 		}
 		fi << endl;
-		t += h*100;
+		t += h*fator;
 	}
 
 	gnuplot << "plot ";
@@ -201,7 +212,7 @@ unset paxis 3 tics\n";*/
 		if (i != testes.size()-1) gnuplot << "'points.csv' using 1:"<< i+2 << " title '"<< testes[i].title << "' smooth unique with lines,\\\n\t ";
 		else gnuplot << "'points.csv' using 1:"<< i+2 << " title '"<< testes[i].title << "' smooth unique with lines\n";
 	}
-	gnuplot << "pause mouse any \"Any key or button will terminate\"";
+	//gnuplot << "pause mouse keypress \"Any key or button will terminate\"";
 	gnuplot.close();
 	fi.close();
 	return 0;
