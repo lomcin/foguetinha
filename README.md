@@ -9,4 +9,4 @@ Projeto de Metodos
 		3.1.1 Abra o terminal e digite "make all" [enter].
 		3.1.2 Seja feliz! :D
 	3.2 No Windows:
-		Desnecessauro. XD
+		Please, don't. XD
