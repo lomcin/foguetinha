@@ -14,6 +14,47 @@ char TITLE[] =
 \t\tLucas Maggi (lom@cin.ufpe.br)\n\n\n\
 ################################\n\n\n";
 
+enum Metodo {
+	Metodo_Analitico = 0,
+	Metodo_Euler,
+	Metodo_EulerModificado,
+	Metodo_RungeKutta,
+	Metodo_Compare
+};
+
+string nameFromMetodo(Metodo metodo) {
+	switch(metodo) {
+		case Metodo_Analitico:
+			return "A_";
+			break;
+		case Metodo_Euler:
+			return "E_";
+			break;
+		case Metodo_EulerModificado:
+			return "EM_";
+			break;
+		case Metodo_RungeKutta:
+			return "RK_";
+			break;
+		case Metodo_Compare:
+			return "C_";
+			break;
+		default:
+			return "";
+			break;
+	}
+}
+
+
+struct Teste {
+	string title;
+	float mi, mf, vi, u, t, dm;
+};
+vector<Teste> testes;
+Metodo metodo = Metodo_Analitico;
+
+std::vector< std::vector<float> > points;
+
 
 
 /*
@@ -68,42 +109,8 @@ float MetodoEulerModificado::Derivada(float t, float massa) {
 	return dv;
 }
 
-struct Teste {
-	string title;
-	float mi, mf, vi, u, t;
-};
 
-int main (int args, char* argv[]) {
-	std::ios_base::sync_with_stdio(true);
-	cout << TITLE;
-
-	vector<Teste> testes;
-	testes.push_back((Teste){"f1",100000.f,100.f, 0.f, 1.f, 1200.f});
-	testes.push_back((Teste){"f2",50000.f,100.f, 0.f, 1.f, 1200.f});
-	testes.push_back((Teste){"f3",10000.f,100.f, 0.f, 1.f, 1200.f});
-	testes.push_back((Teste){"f4",1000.f,100.f, 0.f, 1.f, 1200.f});
-	testes.push_back((Teste){"f5",1000.f,100.f, 0.f, 10.f, 1200.f});
-
-	if (args > 1) {
-		fstream entrada;
-		entrada.open(argv[1]);
-		assert(entrada.is_open());
-
-		testes.clear();
-		Teste teste;
-
-		entrada >> teste.title;
-		entrada >> teste.mi;
-		entrada >> teste.mf;
-		entrada >> teste.vi;
-		entrada >> teste.u;
-		entrada >> teste.t;
-
-		testes.push_back(teste);
-
-		entrada.close();
-	}
-	
+void plota() {
 	/*
 		u 	: 	velocidade relativa de ejeção do combustível
 		mi	: 	massa inicial
@@ -124,33 +131,52 @@ int main (int args, char* argv[]) {
 	//mf = mi - t*dm;
 	mf = 100.f;
 	assert(mf > 0.f);
-
-	
-	std::vector<float> points[testes.size()];
 	
 
 	cout << endl << "Metodo de Euler" << endl << endl;
 
 	
 	float evf = vi;
-	for(int i=0;i<testes.size();++i) {
-		mi = testes[i].mi;
-		mf = testes[i].mf;
-		vi = testes[i].vi;
-		u = testes[i].u;
-		t = testes[i].t;
-		evf = vi;
-		vf = ResultadoAnalitico(u, mi, mf, vi);
-		MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,t,h);
-		MetodoEuler::ClearGraphic();
-		MetodoEuler::Executar(&evf);
-	#ifdef USE_OPENCV
-		//MetodoEuler::MostrarResultados(cv::Scalar(255,0,0));
-		//MetodoEuler::SalvarResultados("teste1.png");
-	#endif
-		copyPointsTo(i,MetodoEuler);
-		MetodoEuler::PrintValues();
-	}
+	switch(metodo) {
+		case Metodo_Analitico:
+			for(int i=0;i<testes.size();++i) {
+				mi = testes[i].mi;
+				mf = testes[i].mf;
+				vi = testes[i].vi;
+				dm = testes[i].dm;
+				u = testes[i].u;
+				float tf = testes[i].t;
+				evf = vi;
+				t = 0.f;
+				points[i].clear();
+				float m = mi;
+				for (int j=0;t<tf;++j) {
+					if (m > mf) m -= dm;
+					t+=h;
+					vf = ResultadoAnalitico(u, mi, m, vi);
+					points[i].push_back(vf);
+				}
+				points[i].push_back(points[i].back());
+			}
+			break;
+		case Metodo_Euler:
+			for(int i=0;i<testes.size();++i) {
+				mi = testes[i].mi;
+				mf = testes[i].mf;
+				vi = testes[i].vi;
+				u = testes[i].u;
+				t = testes[i].t;
+				evf = vi;
+				vf = ResultadoAnalitico(u, mi, mf, vi);
+				MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,t,h);
+				MetodoEuler::Executar(&evf);
+				copyPointsTo(i,MetodoEuler);
+				MetodoEuler::PrintValues();
+			}
+		break;
+		default:
+			break;
+		}
 
 	cout << endl << endl;
 	
@@ -158,12 +184,7 @@ int main (int args, char* argv[]) {
 	mi = 100000.f;
 	cout << endl << "Metodo de Euler Modificado" << endl << endl;
 	MetodoEulerModificado::DefinirParametros(vf,dm,u,mi,mf,vi,t,0.1);
-	MetodoEulerModificado::ClearGraphic();
 	MetodoEulerModificado::Executar(&evf);
-#ifdef USE_OPENCV
-	//MetodoEulerModificado::MostrarResultados(cv::Scalar(255,0,0));
-	//MetodoEulerModificado::SalvarResultados("em1.png");
-#endif
 
 /*
 set datafile separator ","
@@ -209,11 +230,72 @@ unset paxis 3 tics\n";*/
 
 	gnuplot << "plot ";
 	for (int i=0; i < testes.size(); ++i) {
-		if (i != testes.size()-1) gnuplot << "'points.csv' using 1:"<< i+2 << " title '"<< testes[i].title << "' smooth unique with lines,\\\n\t ";
-		else gnuplot << "'points.csv' using 1:"<< i+2 << " title '"<< testes[i].title << "' smooth unique with lines\n";
+		if (i != testes.size()-1) gnuplot << "'points.csv' using 1:"<< i+2 << " title '"<< nameFromMetodo(metodo) <<  testes[i].title << "' smooth unique with lines,\\\n\t ";
+		else gnuplot << "'points.csv' using 1:"<< i+2 << " title '"<< nameFromMetodo(metodo) << testes[i].title << "' smooth unique with lines\n";
 	}
 	//gnuplot << "pause mouse keypress \"Any key or button will terminate\"";
 	gnuplot.close();
 	fi.close();
+}
+
+void lerEntrada(char *fileName) {
+	fstream entrada;
+		entrada.open(fileName);
+		assert(entrada.is_open());
+
+		testes.clear();
+		Teste teste;
+		while(entrada.eof() == false) {
+			entrada >> teste.title;
+			if (teste.title.compare("Analitico") == 0) {
+				metodo = Metodo_Analitico;
+				testes.clear();
+				continue;
+			} else if (teste.title.compare("Euler") == 0) {
+				metodo = Metodo_Euler;
+				testes.clear();
+				continue;
+			} else if (teste.title.compare("EulerModificado") == 0) {
+				metodo = Metodo_EulerModificado;
+				testes.clear();
+				continue;
+			} else if (teste.title.compare("RungeKutta") == 0) {
+				metodo = Metodo_RungeKutta;
+				testes.clear();
+				continue;
+			} else if (teste.title.compare("Compare") == 0) {
+				metodo = Metodo_Compare;
+				testes.clear();
+				continue;
+			}
+			entrada >> teste.mi;
+			entrada >> teste.mf;
+			entrada >> teste.vi;
+			entrada >> teste.u;
+			entrada >> teste.t;
+			entrada >> teste.dm;
+			points.resize(points.size()+1);
+
+			testes.push_back(teste);
+		}
+		plota();
+
+		entrada.close();
+}
+
+int main (int args, char* argv[]) {
+	std::ios_base::sync_with_stdio(true);
+	cout << TITLE;
+	cout << "HAHEAHE";
+	testes.push_back((Teste){"f1",100000.f,100.f, 0.f, 1.f, 1200.f, 100.f});
+	testes.push_back((Teste){"f2",50000.f,100.f, 0.f, 1.f, 1200.f, 100.f});
+	testes.push_back((Teste){"f3",10000.f,100.f, 0.f, 1.f, 1200.f, 100.f});
+	testes.push_back((Teste){"f4",1000.f,100.f, 0.f, 1.f, 1200.f, 100.f});
+	testes.push_back((Teste){"f5",1000.f,100.f, 0.f, 10.f, 1200.f, 100.f});
+
+	if (args > 1) {
+		lerEntrada(argv[1]);
+	}
+		
 	return 0;
 }

@@ -7,7 +7,7 @@ compile:
 	-o $(appname)
 	
 run:
-	@./$(appname) > saida.txt
+	@./$(appname) entrada.txt > saida.txt
 	#gedit saida.txt &
 	gnuplot5-qt plot.gnu -persist
 	
