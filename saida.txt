@@ -12,9 +12,28 @@
 ################################
 
 
-HAHEAHE
+
 Metodo de Euler
 
+Definindo parâmetros
+
+
+
+
+Executando Metodo de Euler
+Último valor 6.85864
+Resultado Analitico : 6.90776
+erro 0.0491185
+tempo 1200 y_final 6.85864
+Levou 12002 iteracoes.
+Valores : 
+ u 	: 1
+ mi	: 100000
+ mf	: 100
+ vi	: 0
+ tempo	: 1200
+ dm	: 100
+ h 	: 0.1
 Definindo parâmetros
 
 
@@ -32,92 +51,7 @@ Valores :
  mf	: 100
  vi	: 0
  tempo	: 1200
- tx	: 100
-Definindo parâmetros
+ dm	: 100
+ h 	: 1
 
 
-
-
-Executando Metodo de Euler
-Último valor 5.79282
-Resultado Analitico : 6.21461
-erro 0.421785
-tempo 1200 y_final 5.79282
-Levou 1200 iteracoes.
-Valores : 
- u 	: 1
- mi	: 50000
- mf	: 100
- vi	: 0
- tempo	: 1200
- tx	: 100
-Definindo parâmetros
-
-
-
-
-Executando Metodo de Euler
-Último valor 4.18738
-Resultado Analitico : 4.60517
-erro 0.417793
-tempo 1200 y_final 4.18738
-Levou 1200 iteracoes.
-Valores : 
- u 	: 1
- mi	: 10000
- mf	: 100
- vi	: 0
- tempo	: 1200
- tx	: 100
-Definindo parâmetros
-
-
-
-
-Executando Metodo de Euler
-Último valor 1.92897
-Resultado Analitico : 2.30259
-erro 0.373617
-tempo 1200 y_final 1.92897
-Levou 1200 iteracoes.
-Valores : 
- u 	: 1
- mi	: 1000
- mf	: 100
- vi	: 0
- tempo	: 1200
- tx	: 100
-Definindo parâmetros
-
-
-
-
-Executando Metodo de Euler
-Último valor 19.2897
-Resultado Analitico : 23.02585
-erro 3.73617
-tempo 1200 y_final 19.2897
-Levou 1200 iteracoes.
-Valores : 
- u 	: 10
- mi	: 1000
- mf	: 100
- vi	: 0
- tempo	: 1200
- tx	: 100
-
-
-
-Metodo de Euler Modificado
-
-Definindo parâmetros
-
-
-
-
-Executando Metodo de Euler Modificado
-Último valor 0
-Resultado Analitico : 23.02585
-erro 23.0259
-tempo 0 y_final 0
-Levou 0 iteracoes.

@@ -48,7 +48,7 @@ string nameFromMetodo(Metodo metodo) {
 
 struct Teste {
 	string title;
-	float mi, mf, vi, u, t, dm;
+	float mi, mf, vi, u, t, dm, h;
 };
 vector<Teste> testes;
 Metodo metodo = Metodo_Analitico;
@@ -133,25 +133,33 @@ void plota() {
 	assert(mf > 0.f);
 	
 
-	cout << endl << "Metodo de Euler" << endl << endl;
 
 	
 	float evf = vi;
 	switch(metodo) {
 		case Metodo_Analitico:
+			cout << endl << "Metodo Analitico" << endl << endl;
 			for(int i=0;i<testes.size();++i) {
 				mi = testes[i].mi;
 				mf = testes[i].mf;
 				vi = testes[i].vi;
 				dm = testes[i].dm;
+				h = testes[i].h;
 				u = testes[i].u;
 				float tf = testes[i].t;
 				evf = vi;
 				t = 0.f;
+				//dm *= h;
+
+				vf = ResultadoAnalitico(u, mi, mf, vi);
+
+				MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,tf,h);
+				MetodoEuler::PrintValues();
+				cout << "resultado " << vf << endl;
 				points[i].clear();
 				float m = mi;
 				for (int j=0;t<tf;++j) {
-					if (m > mf) m -= dm;
+					if (m > mf) m -= dm*h;
 					t+=h;
 					vf = ResultadoAnalitico(u, mi, m, vi);
 					points[i].push_back(vf);
@@ -159,32 +167,58 @@ void plota() {
 				points[i].push_back(points[i].back());
 			}
 			break;
+
 		case Metodo_Euler:
+			cout << endl << "Metodo de Euler" << endl << endl;
 			for(int i=0;i<testes.size();++i) {
 				mi = testes[i].mi;
 				mf = testes[i].mf;
 				vi = testes[i].vi;
+				dm = testes[i].dm;
+				h = testes[i].h;
 				u = testes[i].u;
 				t = testes[i].t;
 				evf = vi;
+				//dm *= h;
 				vf = ResultadoAnalitico(u, mi, mf, vi);
 				MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,t,h);
 				MetodoEuler::Executar(&evf);
 				copyPointsTo(i,MetodoEuler);
 				MetodoEuler::PrintValues();
 			}
-		break;
+			break;
+
+		case Metodo_EulerModificado:
+			cout << endl << "Metodo de Euler Modificado" << endl << endl;
+			for(int i=0;i<testes.size();++i) {
+				mi = testes[i].mi;
+				mf = testes[i].mf;
+				vi = testes[i].vi;
+				dm = testes[i].dm;
+				h = testes[i].h;
+				u = testes[i].u;
+				t = testes[i].t;
+				evf = vi;
+				//dm *= h;
+				vf = ResultadoAnalitico(u, mi, mf, vi);
+				MetodoEulerModificado::DefinirParametros(vf,dm,u,mi,mf,t,h);
+				MetodoEulerModificado::Executar(&evf);
+				copyPointsTo(i,MetodoEulerModificado);
+				MetodoEulerModificado::PrintValues();
+			}
+			break;
 		default:
 			break;
 		}
 
 	cout << endl << endl;
-	
+	/*
 	evf = vi;
 	mi = 100000.f;
 	cout << endl << "Metodo de Euler Modificado" << endl << endl;
 	MetodoEulerModificado::DefinirParametros(vf,dm,u,mi,mf,vi,t,0.1);
 	MetodoEulerModificado::Executar(&evf);
+	*/
 
 /*
 set datafile separator ","
@@ -274,6 +308,7 @@ void lerEntrada(char *fileName) {
 			entrada >> teste.u;
 			entrada >> teste.t;
 			entrada >> teste.dm;
+			entrada >> teste.h;
 			points.resize(points.size()+1);
 
 			testes.push_back(teste);
@@ -286,7 +321,7 @@ void lerEntrada(char *fileName) {
 int main (int args, char* argv[]) {
 	std::ios_base::sync_with_stdio(true);
 	cout << TITLE;
-	cout << "HAHEAHE";
+
 	testes.push_back((Teste){"f1",100000.f,100.f, 0.f, 1.f, 1200.f, 100.f});
 	testes.push_back((Teste){"f2",50000.f,100.f, 0.f, 1.f, 1200.f, 100.f});
 	testes.push_back((Teste){"f3",10000.f,100.f, 0.f, 1.f, 1200.f, 100.f});

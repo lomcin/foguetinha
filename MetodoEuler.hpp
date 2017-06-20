@@ -82,7 +82,8 @@ namespace MetodoEuler {
 		" mf	: " << mf << endl <<
 		" vi	: " << vi << endl <<
 		" tempo	: " << tempo << endl <<
-		" tx	: " << dm << endl;
+		" dm	: " << dm << endl <<
+		" h 	: " << h << endl;
 	}
 	
 	
@@ -126,7 +127,7 @@ namespace MetodoEuler {
 			*y = *y + h*Derivada(tempo_atual, m);
 			points.push_back(*y);
 			//cout << *y << endl;
-			if (m > mf) m -= dm;
+			if (m > mf) m -= dm*h;
 			++iteracoes;
 		}
 		cout << "Último valor " << points.back() << endl;

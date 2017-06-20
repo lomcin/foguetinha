@@ -84,7 +84,8 @@ namespace MetodoEulerModificado {
 		" mf	: " << mf << endl <<
 		" vi	: " << vi << endl <<
 		" tempo	: " << tempo << endl <<
-		" tx	: " << dm << endl;
+		" dm	: " << dm << endl <<
+		" h 	: " << h << endl;
 	}
 	
 	
@@ -95,25 +96,6 @@ namespace MetodoEulerModificado {
 #endif
 	}
 	
-	/*int Euler(float tempo_aplicado = 1.f, float *y = NULL) {
-		if (y == NULL) return 0;
-		float tempo_atual = 0.0f, m = mi;
-		float erro = 1.f;
-		while (erro > precisao) {
-			iteracoes++;
-			cout << *y << " ";
-			*y = *y + h*Derivada(tempo_atual+h, m);
-			cout << *y << endl;
-			m -= dm;
-			++iteracoes;
-		}
-		erro = fabs(*y - solucao_analitica);
-		if (erro >= precisao) {
-			h = h/4.f;
-		} else {
-			return iteracoes;
-		}
-	}*/
 	
 	int EulerModificado(float tempo_aplicado = 1.f, float *y = NULL) {
 		if (y == NULL) return 0;
@@ -129,7 +111,7 @@ namespace MetodoEulerModificado {
 			*y=*y+ (h/2.f)*( Derivada(tempo_atual,m)+Derivada(tempo_atual+h,m-dm) );
 			points.push_back(*y);
 			//cout << *y << endl;
-			if (m > mf) m -= dm;
+			if (m > mf) m -= dm*h;
 			++iteracoes;
 		}
 		cout << "Último valor " << points.back() << endl;

@@ -1,0 +1,2 @@
+EulerModificado
+f1 100000 100 0 1 1200 100 0.1
