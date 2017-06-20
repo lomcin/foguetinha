@@ -14,6 +14,8 @@ char TITLE[] =
 \t\tLucas Maggi (lom@cin.ufpe.br)\n\n\n\
 ################################\n\n\n";
 
+
+
 /*
 	Organizando derivadas
 		u dM/dt = M dv/dt = M a
@@ -66,12 +68,30 @@ float MetodoEulerModificado::Derivada(float t, float massa) {
 	return dv;
 }
 
+struct Teste {
+	string title;
+	float mi, mf, vi, u, t;
+};
 
 int main (int args, char* argv[]) {
 	std::ios_base::sync_with_stdio(true);
 	cout << TITLE;
+
+	vector<Teste> testes;
+	testes.push_back((Teste){"f1",100000.f,100.f, 0.f, 1.f, 1200.f});
+	testes.push_back((Teste){"f2",50000.f,100.f, 0.f, 1.f, 1200.f});
+	testes.push_back((Teste){"f3",10000.f,100.f, 0.f, 1.f, 1200.f});
+	testes.push_back((Teste){"f4",1000.f,100.f, 0.f, 1.f, 1200.f});
+	testes.push_back((Teste){"f5",1000.f,100.f, 0.f, 10.f, 1200.f});
+
 	if (args > 1) {
-	
+		fstream entrada;
+		entrada.open(argv[1]);
+		assert(entrada.is_open());
+
+
+
+		entrada.close();
 	}
 	
 	/*
@@ -88,56 +108,40 @@ int main (int args, char* argv[]) {
 	vi = 0.f;
 	mi = 100000.f;
 	vf = 0.f;
-	t = 1000.f;
+	t = 1200.f;
 	dm = 100.f;
 	u = 1.f;
 	//mf = mi - t*dm;
 	mf = 100.f;
 	assert(mf > 0.f);
 
-	std::vector<float> points[4];
 	
+	std::vector<float> points[testes.size()];
 	
 
 	cout << endl << "Metodo de Euler" << endl << endl;
 
 	
 	float evf = vi;
+	for(int i=0;i<testes.size();++i) {
+		mi = testes[i].mi;
+		mf = testes[i].mf;
+		vi = testes[i].vi;
+		u = testes[i].u;
+		t = testes[i].t;
+		evf = vi;
+		vf = ResultadoAnalitico(u, mi, mf, vi);
+		MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,t,h);
+		MetodoEuler::ClearGraphic();
+		MetodoEuler::Executar(&evf);
+	#ifdef USE_OPENCV
+		//MetodoEuler::MostrarResultados(cv::Scalar(255,0,0));
+		//MetodoEuler::SalvarResultados("teste1.png");
+	#endif
+		copyPointsTo(i,MetodoEuler);
+		MetodoEuler::PrintValues();
+	}
 
-	vf = ResultadoAnalitico(u, mi, mf, vi);
-	MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,t,h);
-	MetodoEuler::ClearGraphic();
-	MetodoEuler::Executar(&evf);
-#ifdef USE_OPENCV
-	MetodoEuler::MostrarResultados(cv::Scalar(255,0,0));
-	//MetodoEuler::SalvarResultados("teste1.png");
-#endif
-	copyPointsTo(0,MetodoEuler);
-	MetodoEuler::PrintValues();
-
-#ifdef USE_OPENCV
-	vi = 0.f;
-	evf = vi;
-	mi = 50000.f;
-	vf = ResultadoAnalitico(u, mi, mf, vi);
-	MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,t,h);
-	MetodoEuler::Executar(&evf);
-	MetodoEuler::MostrarResultados(cv::Scalar(0,255,0));
-	MetodoEuler::PrintValues();
-	copyPointsTo(1,MetodoEuler);
-	//MetodoEuler::SalvarResultados("teste2.png");
-	
-	vi = 0.f;
-	evf = vi;
-	mi = 10000.f;
-	vf = ResultadoAnalitico(u, mi, mf, vi);
-	MetodoEuler::DefinirParametros(vf,dm,u,mi,mf,t,h);
-	MetodoEuler::Executar(&evf);
-	MetodoEuler::MostrarResultados(cv::Scalar(0,0,0));
-	MetodoEuler::PrintValues();
-	MetodoEuler::SalvarResultados("teste3.png");
-	copyPointsTo(2,MetodoEuler);
-#endif	
 	cout << endl << endl;
 	
 	evf = vi;
@@ -147,29 +151,58 @@ int main (int args, char* argv[]) {
 	MetodoEulerModificado::ClearGraphic();
 	MetodoEulerModificado::Executar(&evf);
 #ifdef USE_OPENCV
-	MetodoEulerModificado::MostrarResultados(cv::Scalar(255,0,0));
-	MetodoEulerModificado::SalvarResultados("em1.png");
+	//MetodoEulerModificado::MostrarResultados(cv::Scalar(255,0,0));
+	//MetodoEulerModificado::SalvarResultados("em1.png");
 #endif
 
-	ofstream fi;
+/*
+set datafile separator ","
+set termoption dash
+set style line 1 lt 2 lc rgb "red" lw 3
+set style line 2 lt 2 lc rgb "orange" lw 2
+set style line 3 lt 2 lc rgb "yellow" lw 3
+set style line 4 lt 2 lc rgb "green" lw 2
+plot 'points.csv' using 0:3
+pause mouse any "Any key or button will terminate"
+*/
+
+	ofstream fi, gnuplot;
+	gnuplot.open("plot.gnu");
 	fi.open("points.csv");
 
-	assert(fi.is_open());
-	fi << "Tempo";
-	for (int j=0; j < 3; ++j) {
-		fi << ";v_" << j;
+	assert(fi.is_open() && gnuplot.is_open());
+	gnuplot << "set datafile separator \",\"\n\
+set termoption dash\nset style data points\n";
+	for(int i=0;i<testes.size();++i) {
+		gnuplot << "set style line " << i+1 << " lt 2 lw 10 pt 1 ps 0.5\n";
 	}
-	fi << endl;
+	//gnuplot << "set for [i=1:3] linetype i dt i\n";
+	/*
+	unset paxis 1 tics\n
+unset paxis 2 tics\n
+unset paxis 3 tics\n";*/
+	/*fi << "Tempo";
+	for (int j=0; j < 3; ++j) {
+		fi << ",v_" << j;
+	}
+	fi << endl;*/
 	t = 0.f;
-	for(int i = 0; i < points[0].size()/100; ++i) {
+	for(int i = 0; i < points[0].size()/100 + 1; ++i) {
 		fi << t;
-		for (int j=0; j < 3; ++j) {
-			fi << ";" << points[j][i*100];
+		for (int j=0; j < testes.size(); ++j) {
+			fi << "," << points[j][i*100];
 		}
 		fi << endl;
 		t += h*100;
 	}
 
+	gnuplot << "plot ";
+	for (int i=0; i < testes.size(); ++i) {
+		if (i != testes.size()-1) gnuplot << "'points.csv' using 1:"<< i+2 << " title '"<< testes[i].title << "' smooth unique with lines,\\\n\t ";
+		else gnuplot << "'points.csv' using 1:"<< i+2 << " title '"<< testes[i].title << "' smooth unique with lines\n";
+	}
+	gnuplot << "pause mouse any \"Any key or button will terminate\"";
+	gnuplot.close();
 	fi.close();
 	return 0;
 }
